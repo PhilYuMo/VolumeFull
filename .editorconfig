@@ -1,0 +1,58 @@
+root = true
+
+[*]
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 4
+
+[*.{csproj,props,targets,xml,resx,json,manifest}]
+indent_size = 2
+
+[*.{xaml,md,yml,yaml}]
+trim_trailing_whitespace = false
+
+# 现有代码是块式 namespace + 4 空格，风格规则先以 suggestion 引入，
+# 避免一次性产生大量构建警告；后续可以逐步调成 warning。
+[*.cs]
+dotnet_sort_system_directives_first = true
+csharp_new_line_before_open_brace = all
+csharp_new_line_before_else = true
+csharp_new_line_before_catch = true
+csharp_new_line_before_finally = true
+csharp_space_after_keywords_in_control_flow_statements = false
+csharp_space_after_cast = false
+csharp_using_directive_placement = outside_namespace:suggestion
+csharp_style_namespace_declarations = block_scoped:suggestion
+dotnet_style_qualification_for_field = false:suggestion
+dotnet_style_qualification_for_property = false:suggestion
+dotnet_style_qualification_for_method = false:suggestion
+dotnet_style_qualification_for_event = false:suggestion
+dotnet_style_predefined_type_for_locals_parameters_members = true:suggestion
+
+# 命名：接口 I 前缀、类型和成员 PascalCase、参数和局部变量 camelCase（建议级别）
+dotnet_naming_style.pascal_case.capitalization = pascal_case
+dotnet_naming_style.camel_case.capitalization = camel_case
+dotnet_naming_style.i_prefix.capitalization = pascal_case
+dotnet_naming_style.i_prefix.required_prefix = I
+
+dotnet_naming_symbols.interfaces.applicable_kinds = interface
+dotnet_naming_symbols.types_and_members.applicable_kinds = class, struct, enum, delegate, method, property, event
+dotnet_naming_symbols.locals_and_parameters.applicable_kinds = parameter, local
+
+dotnet_naming_rule.interfaces_rule.symbols = interfaces
+dotnet_naming_rule.interfaces_rule.style = i_prefix
+dotnet_naming_rule.interfaces_rule.severity = suggestion
+
+dotnet_naming_rule.types_and_members_rule.symbols = types_and_members
+dotnet_naming_rule.types_and_members_rule.style = pascal_case
+dotnet_naming_rule.types_and_members_rule.severity = suggestion
+
+dotnet_naming_rule.locals_and_parameters_rule.symbols = locals_and_parameters
+dotnet_naming_rule.locals_and_parameters_rule.style = camel_case
+dotnet_naming_rule.locals_and_parameters_rule.severity = suggestion
+
+# 生成代码保留生成器的排版
+[*.Designer.cs]
+generated_code = true

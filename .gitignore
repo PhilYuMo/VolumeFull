@@ -1,0 +1,31 @@
+# Build outputs
+bin/
+obj/
+publish/
+便携版/
+*.user
+*.suo
+
+# Logs and local data
+data/
+*.log
+*.bak
+
+# IDE
+.vs/
+.idea/
+
+# OS
+Thumbs.db
+desktop.ini
+
+# 发布产物（走 GitHub Releases）
+发布/
+
+# 安装器构建产物（只提交源码）
+安装器/app.zip
+安装器/*.exe
+
+# 本地图标素材
+图标源/
+

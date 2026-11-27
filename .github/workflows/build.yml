@@ -1,0 +1,27 @@
+name: Build and test
+
+on:
+  push:
+    branches: [ master, 'release/**' ]
+  pull_request:
+    branches: [ master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Restore
+        run: dotnet restore VolumeFull.sln
+
+      - name: Build
+        run: dotnet build VolumeFull.sln -c Release --no-restore
+
+      - name: Test
+        run: dotnet test VolumeFull.Tests/VolumeFull.Tests.csproj -c Release --no-build

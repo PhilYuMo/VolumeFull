@@ -1,0 +1,57 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <RootNamespace>VolumeCtrlWpf</RootNamespace>
+    <AssemblyName>VolumeFull</AssemblyName>
+    <ApplicationIcon>app.ico</ApplicationIcon>
+    <Nullable>disable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <PlatformTarget>x64</PlatformTarget>
+    <RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
+    <PublishSingleFile>false</PublishSingleFile>
+    <Version>1.2.2</Version>
+    <FileVersion>1.2.2.0</FileVersion>
+    <AssemblyVersion>1.2.2.0</AssemblyVersion>
+    <InformationalVersion>1.2.2</InformationalVersion>
+    <Product>VolumeFull</Product>
+    <FileDescription>VolumeFull 音量控制工具</FileDescription>
+  </PropertyGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="VolumeFull.Tests" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="H.NotifyIcon.Wpf" Version="2.1.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="app.ico" />
+    <!-- HarmonyOS Sans SC：免费可商用（Copyright 2021 Huawei Device Co., Ltd.），嵌入程序，不依赖系统安装 -->
+    <Resource Include="fonts\HarmonyOS_Sans_SC_Regular.ttf" />
+    <Resource Include="fonts\HarmonyOS_Sans_SC_Bold.ttf" />
+    <Content Include="tray-volume.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="app.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="发布\**" />
+    <Compile Remove="安装器\**" />
+    <None Remove="安装器\**" />
+    <Page Remove="安装器\**" />
+    <Resource Remove="安装器\**" />
+    <Content Remove="安装器\**" />
+    <Compile Remove="VolumeFull.Tests\**" />
+    <None Remove="VolumeFull.Tests\**" />
+    <Page Remove="VolumeFull.Tests\**" />
+    <Resource Remove="VolumeFull.Tests\**" />
+    <Content Remove="VolumeFull.Tests\**" />
+  </ItemGroup>
+</Project>
+
+
+
+
+

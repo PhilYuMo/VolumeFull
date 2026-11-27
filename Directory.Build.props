@@ -1,0 +1,7 @@
+<Project>
+  <PropertyGroup>
+    <!-- 与 .editorconfig 对齐：把代码风格提示带进构建输出。
+         目前规则都是 suggestion，不会产生构建警告；调整 severity 后即可逐步收紧。 -->
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+  </PropertyGroup>
+</Project>

@@ -1,0 +1,182 @@
+<Window x:Class="VolumeCtrlWpf.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="VolumeFull" Height="800" Width="367"
+        WindowStartupLocation="CenterScreen"
+        Background="#EDF1F7"
+        FontFamily="{StaticResource AppFont}"
+        Closing="OnWindowClosing">
+    <Window.Resources>
+        <Style x:Key="Win11Slider" TargetType="Slider">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Slider">
+                        <Grid Height="22" Background="Transparent">
+                            <Track x:Name="PART_Track">
+                                <Track.DecreaseRepeatButton>
+                                    <RepeatButton x:Name="FillPart" Command="{x:Static Slider.DecreaseLarge}"
+                                                  Background="{DynamicResource SliderFill}">
+                                        <RepeatButton.Template>
+                                            <ControlTemplate TargetType="RepeatButton">
+                                                <Border Height="4" CornerRadius="2" Background="{TemplateBinding Background}"/>
+                                            </ControlTemplate>
+                                        </RepeatButton.Template>
+                                    </RepeatButton>
+                                </Track.DecreaseRepeatButton>
+                                <Track.IncreaseRepeatButton>
+                                    <RepeatButton x:Name="TrackPart" Command="{x:Static Slider.IncreaseLarge}"
+                                                  Background="{DynamicResource SliderTrack}">
+                                        <RepeatButton.Template>
+                                            <ControlTemplate TargetType="RepeatButton">
+                                                <Border Height="4" CornerRadius="2" Background="{TemplateBinding Background}"/>
+                                            </ControlTemplate>
+                                        </RepeatButton.Template>
+                                    </RepeatButton>
+                                </Track.IncreaseRepeatButton>
+                                <Track.Thumb>
+                                    <!-- 照同类音量工具 / Win11 音量滑块：10px 实心强调色圆点，悬停放大、拖动缩小 -->
+                                    <Thumb x:Name="ThumbPart" Width="20" Height="20" Foreground="{DynamicResource SliderFill}">
+                                        <Thumb.Template>
+                                            <ControlTemplate TargetType="Thumb">
+                                                <Grid Background="Transparent">
+                                                    <Ellipse x:Name="Inner" Width="10" Height="10"
+                                                             Fill="{TemplateBinding Foreground}"
+                                                             RenderTransformOrigin="0.5,0.5">
+                                                        <Ellipse.RenderTransform>
+                                                            <ScaleTransform ScaleX="1" ScaleY="1"/>
+                                                        </Ellipse.RenderTransform>
+                                                    </Ellipse>
+                                                </Grid>
+                                                <ControlTemplate.Triggers>
+                                                    <MultiTrigger>
+                                                        <MultiTrigger.Conditions>
+                                                            <Condition Property="IsMouseOver" Value="True"/>
+                                                            <Condition Property="IsDragging" Value="False"/>
+                                                        </MultiTrigger.Conditions>
+                                                        <Setter TargetName="Inner" Property="RenderTransform">
+                                                            <Setter.Value><ScaleTransform ScaleX="1.4" ScaleY="1.4"/></Setter.Value>
+                                                        </Setter>
+                                                    </MultiTrigger>
+                                                    <Trigger Property="IsDragging" Value="True">
+                                                        <Setter TargetName="Inner" Property="RenderTransform">
+                                                            <Setter.Value><ScaleTransform ScaleX="0.86" ScaleY="0.86"/></Setter.Value>
+                                                        </Setter>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Thumb.Template>
+                                    </Thumb>
+                                </Track.Thumb>
+                            </Track>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="FillPart" Property="Background" Value="{DynamicResource SliderFillDisabled}"/>
+                                <Setter TargetName="TrackPart" Property="Background" Value="{DynamicResource SliderTrackDisabled}"/>
+                                <Setter TargetName="ThumbPart" Property="Foreground" Value="{DynamicResource SliderFillDisabled}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="ThinScrollBar" TargetType="ScrollBar">
+            <Setter Property="Width" Value="8"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ScrollBar">
+                        <Grid Background="Transparent">
+                            <Track x:Name="PART_Track" IsDirectionReversed="True" Orientation="Vertical">
+                                <Track.DecreaseRepeatButton>
+                                    <RepeatButton Command="ScrollBar.PageUpCommand" Opacity="0" Focusable="False"/>
+                                </Track.DecreaseRepeatButton>
+                                <Track.IncreaseRepeatButton>
+                                    <RepeatButton Command="ScrollBar.PageDownCommand" Opacity="0" Focusable="False"/>
+                                </Track.IncreaseRepeatButton>
+                                <Track.Thumb>
+                                    <Thumb>
+                                        <Thumb.Template>
+                                            <ControlTemplate TargetType="Thumb">
+                                                <Border CornerRadius="2" Background="#88787878" Width="4" Margin="2,2" HorizontalAlignment="Center"/>
+                                            </ControlTemplate>
+                                        </Thumb.Template>
+                                    </Thumb>
+                                </Track.Thumb>
+                            </Track>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <!-- 覆盖式滚动区域：滚动条浮在内容右侧、不占布局宽度，左右留白才能对称；默认透明，滚动时由代码淡入 -->
+        <Style x:Key="OverlayScrollViewer" TargetType="ScrollViewer">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ScrollViewer">
+                        <Grid Background="{TemplateBinding Background}">
+                            <ScrollContentPresenter x:Name="PART_ScrollContentPresenter"
+                                                    Margin="{TemplateBinding Padding}"
+                                                    CanContentScroll="{TemplateBinding CanContentScroll}"
+                                                    Content="{TemplateBinding Content}"
+                                                    ContentTemplate="{TemplateBinding ContentTemplate}"/>
+                            <ScrollBar x:Name="PART_VerticalScrollBar"
+                                       HorizontalAlignment="Right"
+                                       VerticalAlignment="Stretch"
+                                       Width="6"
+                                       Opacity="0"
+                                       Orientation="Vertical"
+                                       Style="{StaticResource ThinScrollBar}"
+                                       Value="{Binding VerticalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}"
+                                       Maximum="{TemplateBinding ScrollableHeight}"
+                                       ViewportSize="{TemplateBinding ViewportHeight}"
+                                       Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}"/>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+    <Grid x:Name="RootGrid">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" Margin="10,10,10,4">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Button x:Name="SearchButton" Grid.Column="0" Content="&#xE721;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="15" ToolTip="搜索应用" Height="34" Width="38" Margin="0,0,6,0" Click="OnSearchClick" Background="#CCFFFFFF" BorderBrush="#1A000000" BorderThickness="1"/>
+            <Button x:Name="CollapseButton" Grid.Column="1" Content="&#xE70D;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="15" ToolTip="全部折叠" Height="34" Width="38" Margin="0,0,6,0" Click="OnCollapseClick" Background="#CCFFFFFF" BorderBrush="#1A000000" BorderThickness="1"/>
+            <Button x:Name="RefreshButton" Grid.Column="2" Content="&#xE72C;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="15" ToolTip="刷新" Height="34" Width="38" Margin="0,0,6,0" Click="OnRefreshClick" Background="#CCFFFFFF" BorderBrush="#1A000000" BorderThickness="1"/>
+            <Button x:Name="SettingsButton" Grid.Column="3" Content="&#xE713;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="15" ToolTip="设置" Height="34" Width="38" Margin="0,0,6,0" Click="OnSettingsClick" Background="#CCFFFFFF" BorderBrush="#1A000000" BorderThickness="1"/>
+            <ToggleButton x:Name="TopmostButton" Grid.Column="4" Content="&#xE718;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="15" ToolTip="置顶" Height="34" Width="38" Margin="0,0,6,0" Click="OnTopmostClick" Background="#CCFFFFFF" BorderBrush="#1A000000" BorderThickness="1"/>
+            <Button x:Name="SwitchDeviceButton" Grid.Column="5" Content="&#xE772;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="15" ToolTip="切换输出设备" Height="34" Width="38" Margin="0,0,6,0" Click="OnSwitchDeviceClick" Background="#CCFFFFFF" BorderBrush="#1A000000" BorderThickness="1"/>
+            <Button x:Name="SwitchInputButton" Grid.Column="6" Content="&#xE720;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="15" ToolTip="切换输入设备" Height="34" Width="38" Click="OnSwitchInputDeviceClick" Background="#CCFFFFFF" BorderBrush="#1A000000" BorderThickness="1"/>
+        </Grid>
+
+        <ScrollViewer x:Name="DevicesScroll" Grid.Row="1"
+                      VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
+                      Style="{StaticResource OverlayScrollViewer}"
+                      ScrollChanged="OnDevicesScrollChanged">
+            <StackPanel x:Name="DevicesPanel" Margin="10,4,10,4"/>
+        </ScrollViewer>
+
+        <TextBlock x:Name="StatusText" Grid.Row="2" Margin="12,6,12,10" Foreground="Gray"/>
+    </Grid>
+</Window>
+
+
+
+
+
+
+
